@@ -2,6 +2,12 @@
 
 A comprehensive, RFC-compliant OAuth 2.0 authorization server implementation in TypeScript. This library provides a framework-agnostic OAuth 2.0 server that can be easily integrated with any Node.js web framework or deployed to serverless environments like AWS Lambda.
 
+We have included a sample express app which you can run using `yarn tsx examples/express/index.ts` and visit `http://localhost:3000`
+
+![Demo App Screenshot](examples/express/app.png)
+
+### Complete Express.js Integration
+
 ## Features
 
 ### 🔐 OAuth 2.0 Grant Types
@@ -467,12 +473,6 @@ import type {
 ```
 
 ## Examples
-
-We have provided a demo application locatated in examples/express/ folder that provides you with a playground for all grant flows and endpoints
-
-![Demo App Screenshot](examples/express/app.png)
-
-### Complete Express.js Integration
 
 ```typescript
 import express from 'express';
