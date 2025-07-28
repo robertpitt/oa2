@@ -51,7 +51,7 @@ yarn add oauth
 ### Basic Server Setup
 
 ```typescript
-import { createServer, authorizationCodeGrant, clientCredentialsGrant } from 'oauth';
+import { createServer, authorizationCodeGrant, clientCredentialsGrant } from '@oa2/core';
 import { InMemoryStorageAdapter } from './storage'; // Your storage implementation
 
 // Create storage adapter
@@ -100,7 +100,7 @@ app.post('/oauth/token', async (req, res) => {
 ### AWS Lambda Integration
 
 ```typescript
-import { createServer, authorizationCodeGrant, apiGatewayTokenHandler, apiGatewayAuthorizeHandler } from 'oauth';
+import { createServer, authorizationCodeGrant, apiGatewayTokenHandler, apiGatewayAuthorizeHandler } from '@oa2/core';
 
 const server = createServer({
   storage: new YourStorageAdapter(),
@@ -233,7 +233,7 @@ const response = await server.introspect(introspectRequest);
 The most secure flow for web applications and mobile apps.
 
 ```typescript
-import { authorizationCodeGrant } from 'oauth';
+import { authorizationCodeGrant } from '@oa2/core';
 
 const grant = authorizationCodeGrant({
   authorizationCodeLifetime: 600, // 10 minutes
@@ -253,7 +253,7 @@ const grant = authorizationCodeGrant({
 For machine-to-machine authentication.
 
 ```typescript
-import { clientCredentialsGrant } from 'oauth';
+import { clientCredentialsGrant } from '@oa2/core';
 
 const grant = clientCredentialsGrant();
 ```
@@ -272,7 +272,7 @@ curl -X POST /oauth/token \
 For obtaining new access tokens without user interaction.
 
 ```typescript
-import { refreshTokenGrant } from 'oauth';
+import { refreshTokenGrant } from '@oa2/core';
 
 const grant = refreshTokenGrant();
 ```
@@ -292,7 +292,7 @@ curl -X POST /oauth/token \
 Self-contained tokens that can be validated without database lookups.
 
 ```typescript
-import { createJwtTokenStrategy } from 'oauth';
+import { createJwtTokenStrategy } from '@oa2/core';
 
 const storage = new YourStorageAdapter();
 const tokenStrategy = createJwtTokenStrategy(storage, {
@@ -307,7 +307,7 @@ const tokenStrategy = createJwtTokenStrategy(storage, {
 Random tokens stored in the database for maximum security.
 
 ```typescript
-import { createOpaqueTokenStrategy } from 'oauth';
+import { createOpaqueTokenStrategy } from '@oa2/core';
 
 const storage = new YourStorageAdapter();
 const tokenStrategy = createOpaqueTokenStrategy(storage, {
@@ -339,7 +339,7 @@ interface StorageAdapter {
 
 ```typescript
 import { Pool } from 'pg';
-import { StorageAdapter, Client, Token } from 'oauth';
+import { StorageAdapter, Client, Token } from '@oa2/core';
 
 export class PostgreSQLStorageAdapter implements StorageAdapter {
   constructor(private pool: Pool) {}
@@ -374,7 +374,7 @@ import {
   InvalidScopeError,
   InvalidGrantError,
   UnsupportedGrantTypeError,
-} from 'oauth';
+} from '@oa2/core';
 
 try {
   const response = await server.token(request);
@@ -454,7 +454,16 @@ const storage = new InMemoryStorageAdapter();
 Full TypeScript support with comprehensive type definitions:
 
 ```typescript
-import { OAuth2Server, OAuth2Request, OAuth2Response, Client, Token, Grant, StorageAdapter, ServerConfig } from 'oauth';
+import {
+  OAuth2Server,
+  OAuth2Request,
+  OAuth2Response,
+  Client,
+  Token,
+  Grant,
+  StorageAdapter,
+  ServerConfig,
+} from '@oa2/core';
 ```
 
 ## Examples
@@ -463,7 +472,7 @@ import { OAuth2Server, OAuth2Request, OAuth2Response, Client, Token, Grant, Stor
 
 ```typescript
 import express from 'express';
-import { createServer, authorizationCodeGrant } from 'oauth';
+import { createServer, authorizationCodeGrant } from '@oa2/core';
 
 const app = express();
 app.use(express.json());
