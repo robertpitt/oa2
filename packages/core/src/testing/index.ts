@@ -1,8 +1,8 @@
 /**
- * Testing Utilities for OAuth2 Server
+ * Testing Utilities for OAuth 2.0 Server
  *
- * This module provides utilities for testing OAuth2 server implementations,
- * including mock storage adapters and test data.
+ * This module provides testing utilities and mock implementations
+ * to help with OAuth 2.0 server testing and development.
  */
 
 export { InMemoryStorageAdapter } from './storage';

@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import { InMemoryStorageAdapter } from '../../../tests/mocks/storage';
-import { Client } from '../../../src/types';
+import { InMemoryStorageAdapter } from '@oa2/core/testing';
+import type { Client } from '@oa2/core';
 import * as crypto from 'crypto';
 
 const router = express.Router();

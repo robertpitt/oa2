@@ -2,20 +2,24 @@ import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import hbs from 'hbs';
 import path from 'path';
-import { createOAuth2Server } from '../../packages/core/dist/server.js';
-import { createOAuth2Router, validateOAuth2Token } from '../../packages/core/dist/adapters/index.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import {
+  createOAuth2Server,
   authorizationCodeGrant,
   clientCredentialsGrant,
   passwordGrant,
   refreshTokenGrant,
-} from '../../packages/core/dist/grants.js';
-import { InMemoryStorageAdapter } from '../../packages/core/dist/testing/index.js';
-import { hashClientSecret } from '../../packages/core/dist/utils.js';
-import { Client, OAuth2Server } from '../../packages/core/dist/types.js';
+  hashClientSecret,
+  createJwtTokenStrategy,
+} from '@oa2/core';
+import { createOAuth2Router, validateOAuth2Token } from '@oa2/core/adapters';
+import { InMemoryStorageAdapter } from '@oa2/core/testing';
+import type { Client, OAuth2Server } from '@oa2/core';
 import { sessionMiddleware } from './middleware/session';
 import { createAuthRoutes } from './routes/auth';
-import { createJwtTokenStrategy } from '../../packages/core/dist/tokens/index.js';
 
 /**
  * Simple Express.js OAuth 2.0 Server Example (TypeScript)

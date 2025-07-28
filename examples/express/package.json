@@ -4,20 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "ts-node --esm index.ts",
+    "dev": "tsx index.ts",
     "start": "node dist/index.js",
     "build": "tsc"
   },
   "dependencies": {
-    "express": "^5.1.0",
+    "@oa2/core": "workspace:*",
     "cookie-parser": "^1.4.7",
+    "express": "^5.1.0",
     "hbs": "^4.2.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
     "@types/cookie-parser": "^1.4.9",
+    "@types/express": "^5.0.3",
     "@types/hbs": "^4.0.5",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }
