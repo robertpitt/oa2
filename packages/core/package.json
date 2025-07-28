@@ -1,6 +1,6 @@
 {
   "name": "@oa2/core",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A comprehensive, RFC-compliant OAuth 2.0 authorization server implementation in TypeScript",
   "author": "robertpitt <robertpitt1988@gmail.com>",
   "license": "MIT",
