@@ -468,6 +468,10 @@ import type {
 
 ## Examples
 
+We have provided a demo application locatated in examples/express/ folder that provides you with a playground for all grant flows and endpoints
+
+![Demo App Screenshot](examples/express/app.png)
+
 ### Complete Express.js Integration
 
 ```typescript
