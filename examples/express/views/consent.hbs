@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorization Request - OAuth 2.0 Server</title>
+    {{> head}}
+</head>
+<body>
+    <div class="consent-container">
+        <div class="card">
+            <h1 style="text-align: center;">🔐 Authorization Request</h1>
+            <div class="app-info">
+                <span class="client-name">{{client.id}}</span> is requesting access to your account
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>👤 Signed in as:</strong> {{user.username}}
+            </div>
+            
+            <div class="scope-list">
+                <h3>📋 Requested Permissions:</h3>
+                {{#each scopes}}
+                <div class="scope-item">
+                    <div class="scope-name">{{this}}</div>
+                    <div class="scope-description">
+                        {{#if (eq this 'read')}}
+                            Read access to your basic information
+                        {{else if (eq this 'write')}}
+                            Modify your information
+                        {{else if (eq this 'profile')}}
+                            Access to your profile information
+                        {{else if (eq this 'admin')}}
+                            Administrative access
+                        {{else}}
+                            {{this}} permissions
+                        {{/if}}
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            
+            <div class="security-info">
+                🔒 This application will receive the permissions listed above. You can revoke access at any time.
+            </div>
+            
+            <form method="POST" action="/auth/consent">
+                <input type="hidden" name="client_id" value="{{client.id}}">
+                <input type="hidden" name="redirect_uri" value="{{redirect_uri}}">
+                <input type="hidden" name="scope" value="{{requested_scope}}">
+                <input type="hidden" name="state" value="{{state}}">
+                <input type="hidden" name="code_challenge" value="{{code_challenge}}">
+                <input type="hidden" name="code_challenge_method" value="{{code_challenge_method}}">
+                
+                <div class="button-group">
+                    <button type="submit" name="decision" value="deny" class="btn btn-danger">
+                        ❌ Deny Access
+                    </button>
+                    <button type="submit" name="decision" value="approve" class="btn btn-success">
+                        ✅ Approve Access
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {{> footer}}
+</body>
+</html> 

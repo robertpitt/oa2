@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth 2.0 Server</title>
+    {{> head}}
+</head>
+<body>
+    {{> header user=user}}
+    
+    <main>
+        <div class="container">
+            {{#if user}}
+            <div class="card auth-section">
+                <h2>✅ Authentication Status</h2>
+                <p><strong>Logged in as:</strong> {{user.username}}</p>
+                <p>You can now test the complete authorization code flow with login and consent!</p>
+            </div>
+            {{else}}
+            <div class="card user-info">
+                <h2>🔑 Authentication Required</h2>
+                <p>To test the authorization code flow, please log in first.</p>
+                <p><strong>Demo accounts:</strong></p>
+                <ul>
+                    <li><code>testuser</code> / <code>password</code></li>
+                    <li><code>admin</code> / <code>admin123</code></li>
+                </ul>
+                <a href="/auth/login" class="btn btn-info">Login Now</a>
+            </div>
+            {{/if}}
+
+            <div class="card endpoint">
+                <h2>📋 OAuth 2.0 Endpoints</h2>
+                <ul>
+                    <li><strong>GET /oauth/authorize</strong> - Authorization endpoint (with login/consent)</li>
+                    <li><strong>POST /oauth/token</strong> - Token endpoint for all grant types</li>
+                    <li><strong>POST /oauth/revoke</strong> - Token revocation endpoint</li>
+                    <li><strong>POST /oauth/introspect</strong> - Token introspection endpoint</li>
+                </ul>
+            </div>
+
+            <div class="feature-grid">
+                <div class="card example">
+                    <h3>🚀 OAuth Flows</h3>
+                    <button onclick="testAuthCode()" class="btn btn-primary">🌐 Authorization Code Flow</button>
+                    <button onclick="testClientCredentials()" class="btn btn-info">🔧 Client Credentials</button>
+                    <button onclick="testPassword()" class="btn btn-warning">🔑 Password Flow</button>
+                    <button onclick="testIntrospection()" class="btn btn-success">🔍 Introspect Token</button>
+                    <button onclick="testRevocation()" class="btn btn-danger">🗑️ Revoke Token</button>
+                </div>
+                
+                <div class="card">
+                    <h3>🧪 Test Credentials</h3>
+                    <p><strong>Web App Client:</strong><br><code>webapp-client</code> / <code>webapp-secret-123</code></p>
+                    <p><strong>Service Client:</strong><br><code>service-client</code> / <code>service-secret-456</code></p>
+                    <p><strong>Mobile Client:</strong><br><code>mobile-client</code> / <code>mobile-secret-789</code></p>
+                </div>
+            </div>
+
+            <div id="results" style="margin-top: 24px;"></div>
+        </div>
+    </main>
+    
+    {{> footer}}
+    {{> scripts}}
+</body>
+</html> 

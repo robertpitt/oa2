@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorization {{#if error}}Error{{else}}{{#if tokenData}}Success{{else}}Failed{{/if}}{{/if}} - OAuth 2.0 Server</title>
+    {{> head}}
+</head>
+<body>
+    {{> header}}
+    
+    <main>
+        <div class="container">
+            <div class="card">
+                {{#if error}}
+                    <h1 style="color: #e53e3e;">❌ Authorization Error</h1>
+                    <p><strong>Error:</strong> {{error}}</p>
+                    {{#if error_description}}
+                    <p><strong>Description:</strong> {{error_description}}</p>
+                    {{/if}}
+                {{else if tokenData}}
+                    <h1 style="color: #38a169;">✅ Authorization Success!</h1>
+                    {{#if state}}
+                    <p><strong>State:</strong> {{state}}</p>
+                    {{/if}}
+                    <h3>Token Response:</h3>
+                    <pre>{{tokenData}}</pre>
+                {{else}}
+                    <h1 style="color: #e53e3e;">❌ Authorization Failed</h1>
+                    <p>No authorization code received.</p>
+                {{/if}}
+                
+                <div style="margin-top: 20px;">
+                    <a href="/" class="btn btn-primary">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    {{> footer}}
+</body>
+</html> 

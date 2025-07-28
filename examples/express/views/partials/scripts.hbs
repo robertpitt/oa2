@@ -1,0 +1,114 @@
+<script>
+    function showResult(title, data) {
+        const results = document.getElementById('results');
+        if (results) {
+            results.innerHTML = '<div class="card"><h3>📊 ' + title + '</h3><pre>' + JSON.stringify(data, null, 2) + '</pre></div>';
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    async function testClientCredentials() {
+        try {
+            const response = await fetch('/oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa('service-client:service-secret-456')
+                },
+                body: 'grant_type=client_credentials&scope=read%20write'
+            });
+            const data = await response.json();
+            showResult('Client Credentials Flow Response', data);
+        } catch (error) {
+            showResult('Error', { error: error.message });
+        }
+    }
+
+    async function testPassword() {
+        try {
+            const response = await fetch('/oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa('mobile-client:mobile-secret-789')
+                },
+                body: 'grant_type=password&username=testuser&password=password&scope=read%20profile'
+            });
+            const data = await response.json();
+            showResult('Password Flow Response', data);
+        } catch (error) {
+            showResult('Error', { error: error.message });
+        }
+    }
+
+    function testAuthCode() {
+        const currentPort = window.location.port || '3000';
+        // Using proper PKCE pair: code_verifier and its SHA256 hash as code_challenge
+        window.location.href = '/oauth/authorize?response_type=code&client_id=webapp-client&redirect_uri=http://localhost:' + currentPort + '/callback&scope=read%20write&state=xyz123&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256';
+    }
+
+    async function testIntrospection() {
+        try {
+            // First get a token
+            const tokenResponse = await fetch('/oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa('service-client:service-secret-456')
+                },
+                body: 'grant_type=client_credentials&scope=read'
+            });
+            const tokenData = await tokenResponse.json();
+            
+            if (tokenData.access_token) {
+                const introspectResponse = await fetch('/oauth/introspect', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + btoa('service-client:service-secret-456')
+                    },
+                    body: 'token=' + tokenData.access_token
+                });
+                const introspectData = await introspectResponse.json();
+                showResult('Token Introspection Response', introspectData);
+            }
+        } catch (error) {
+            showResult('Error', { error: error.message });
+        }
+    }
+
+    async function testRevocation() {
+        try {
+            // First get a token
+            const tokenResponse = await fetch('/oauth/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa('service-client:service-secret-456')
+                },
+                body: 'grant_type=client_credentials&scope=read'
+            });
+            const tokenData = await tokenResponse.json();
+            
+            if (tokenData.access_token) {
+                const revokeResponse = await fetch('/oauth/revoke', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + btoa('service-client:service-secret-456')
+                    },
+                    body: 'token=' + tokenData.access_token
+                });
+                
+                if (revokeResponse.ok) {
+                    showResult('Token Revocation Response', { success: true, message: 'Token revoked successfully' });
+                } else {
+                    const errorData = await revokeResponse.json();
+                    showResult('Token Revocation Error', errorData);
+                }
+            }
+        } catch (error) {
+            showResult('Error', { error: error.message });
+        }
+    }
+</script> 
