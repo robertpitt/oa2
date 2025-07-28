@@ -41,9 +41,9 @@ A comprehensive, RFC-compliant OAuth 2.0 authorization server implementation in 
 ## Installation
 
 ```bash
-npm install oauth
+npm install @oa2/core
 # or
-yarn add oauth
+yarn add @oa2/core
 ```
 
 ## Quick Start
@@ -443,7 +443,7 @@ npm run test:unit
 ### Mock Storage for Testing
 
 ```typescript
-import { InMemoryStorageAdapter } from 'oauth/test';
+import { InMemoryStorageAdapter } from '@oa2/core/testing';
 
 const storage = new InMemoryStorageAdapter();
 // Pre-populated with test clients and users
@@ -454,7 +454,7 @@ const storage = new InMemoryStorageAdapter();
 Full TypeScript support with comprehensive type definitions:
 
 ```typescript
-import {
+import type {
   OAuth2Server,
   OAuth2Request,
   OAuth2Response,
@@ -572,6 +572,6 @@ This library implements the following OAuth 2.0 and related specifications:
 
 ## Support
 
-- 📖 [Documentation](https://github.com/your-org/oauth/docs)
-- 🐛 [Issue Tracker](https://github.com/your-org/oauth/issues)
-- 💬 [Discussions](https://github.com/your-org/oauth/discussions)
+- 📖 [Documentation](https://github.com/robertpitt/oa2/docs)
+- 🐛 [Issue Tracker](https://github.com/robertpitt/oa2/issues)
+- 💬 [Discussions](https://github.com/robertpitt/oa2/discussions)

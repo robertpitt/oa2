@@ -16,8 +16,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/oa2.git",
+    "url": "https://github.com/robertpitt/oa2.git",
     "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "type": "module",
   "files": [
