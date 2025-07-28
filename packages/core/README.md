@@ -179,4 +179,4 @@ MIT
 
 This package is part of the `@oa2` monorepo. For issues, documentation, and examples, visit:
 
-[GitHub Repository](https://github.com/your-username/oa2)
+[GitHub Repository](https://github.com/robertpitt/oa2)
