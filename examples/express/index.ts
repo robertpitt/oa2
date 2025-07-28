@@ -2,15 +2,20 @@ import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import hbs from 'hbs';
 import path from 'path';
-import { createOAuth2Server } from '../../src/server';
-import { createOAuth2Router, validateOAuth2Token } from '../../src/adapters/express';
-import { authorizationCodeGrant, clientCredentialsGrant, passwordGrant, refreshTokenGrant } from '../../src/grants';
-import { InMemoryStorageAdapter } from '../../tests/mocks/storage';
-import { hashClientSecret } from '../../src/utils';
-import { Client, OAuth2Server } from '../../src/types';
+import { createOAuth2Server } from '../../packages/core/dist/server.js';
+import { createOAuth2Router, validateOAuth2Token } from '../../packages/core/dist/adapters/index.js';
+import {
+  authorizationCodeGrant,
+  clientCredentialsGrant,
+  passwordGrant,
+  refreshTokenGrant,
+} from '../../packages/core/dist/grants.js';
+import { InMemoryStorageAdapter } from '../../packages/core/dist/testing/index.js';
+import { hashClientSecret } from '../../packages/core/dist/utils.js';
+import { Client, OAuth2Server } from '../../packages/core/dist/types.js';
 import { sessionMiddleware } from './middleware/session';
 import { createAuthRoutes } from './routes/auth';
-import { jsonWebTokenStrategy } from '../../src/tokens/jwt';
+import { createJwtTokenStrategy } from '../../packages/core/dist/tokens/index.js';
 
 /**
  * Simple Express.js OAuth 2.0 Server Example (TypeScript)
@@ -90,7 +95,7 @@ async function initializeData(): Promise<void> {
 const oauth2Server: OAuth2Server = createOAuth2Server({
   storage,
   grants: [authorizationCodeGrant(), clientCredentialsGrant(), passwordGrant(), refreshTokenGrant()],
-  tokenStrategy: jsonWebTokenStrategy({
+  tokenStrategy: createJwtTokenStrategy(storage, {
     secret: 'secret',
   }),
   predefinedScopes: ['read', 'write', 'admin', 'profile'],

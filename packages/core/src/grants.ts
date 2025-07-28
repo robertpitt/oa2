@@ -268,12 +268,6 @@ export function authorizationCodeGrant(options?: AuthorizationCodeOptions): Gran
         ? await tokenStrategy.generateTokenPair(tokenParams, context)
         : await generateTokenPair(tokenStrategy, tokenParams, context);
 
-      // For opaque tokens, storage is handled by the strategy
-      // For JWT tokens, we may still want to store them for revocation tracking
-      if (!tokenStrategy.generateTokenPair) {
-        await storage.saveToken(token);
-      }
-
       /**
        * RFC 6749, Section 5.1 Successful Response
        * "The authorization server MUST include the following parameters in the response:
@@ -364,12 +358,6 @@ export function clientCredentialsGrant(): Grant {
       } else {
         // Only generate access token
         token = await tokenStrategy.generateAccessToken(tokenParams, context);
-      }
-
-      // For opaque tokens, storage is handled by the strategy
-      // For JWT tokens, we may still want to store them for revocation tracking
-      if (!tokenStrategy.generateTokenPair && !(tokenStrategy as any).handlesStorage) {
-        await storage.saveToken(token);
       }
 
       /**
@@ -516,12 +504,6 @@ export function refreshTokenGrant(): Grant {
         ? await tokenStrategy.generateTokenPair(tokenParams, context)
         : await generateTokenPair(tokenStrategy, tokenParams, context);
 
-      // For opaque tokens, storage is handled by the strategy
-      // For JWT tokens, we may still want to store them for revocation tracking
-      if (!tokenStrategy.generateTokenPair && !(tokenStrategy as any).handlesStorage) {
-        await storage.saveToken(newToken);
-      }
-
       /**
        * RFC 6749, Section 5.1 Successful Response
        * "The authorization server MUST include the following parameters in the response:
@@ -596,12 +578,6 @@ export function passwordGrant(): Grant {
 
       const tokenStrategy = context.config.tokenStrategy!; // Non-null assertion since we ensure it exists in createServer
       const token = await tokenStrategy.generateAccessToken(tokenParams, context);
-
-      // For opaque tokens, storage is handled by the strategy
-      // For JWT tokens, we may still want to store them for revocation tracking
-      if (!(tokenStrategy as any).handlesStorage) {
-        await storage.saveToken(token);
-      }
 
       return {
         statusCode: 200,

@@ -7,7 +7,7 @@
  */
 
 // JWT Token Strategy - Self-contained, stateless tokens
-export { createJwtTokenStrategy, jsonWebTokenStrategy, type JwtTokenOptions } from './jwt';
+export { createJwtTokenStrategy, type JwtTokenOptions } from './jwt';
 
 // Opaque Token Strategy - Database-persisted random tokens
-export { createOpaqueTokenStrategy, opaqueTokenStrategy, type OpaqueTokenOptions } from './opaque';
+export { createOpaqueTokenStrategy, type OpaqueTokenOptions } from './opaque';

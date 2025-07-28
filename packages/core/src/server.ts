@@ -103,7 +103,7 @@ function createCompleteConfig(config: ServerConfig): ServerConfig & { tokenStrat
     ...config,
     tokenStrategy:
       config.tokenStrategy ||
-      createOpaqueTokenStrategy({
+      createOpaqueTokenStrategy(config.storage, {
         accessTokenExpiresIn: config.accessTokenLifetime || 3600,
         refreshTokenExpiresIn: config.refreshTokenLifetime || 604800,
       }),
@@ -288,11 +288,12 @@ async function handleIntrospectRequest(request: OAuth2Request, storage: StorageA
  *
  * @example
  * ```typescript
+ * const storage = new MyStorageAdapter();
  * const server = createOAuth2Server({
- *   storage: new MyStorageAdapter(),
+ *   storage,
  *   grants: [createAuthorizationCodeGrant(), clientCredentialsGrant()],
  *   predefinedScopes: ['read', 'write'],
- *   tokenStrategy: createJwtTokenStrategy({ secret: 'my-secret' })
+ *   tokenStrategy: createJwtTokenStrategy(storage, { secret: 'my-secret' })
  * });
  * ```
  */

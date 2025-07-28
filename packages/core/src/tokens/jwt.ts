@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { Token, Context, TokenStrategy, TokenGenerationParams } from '../types';
+import { Token, Context, TokenStrategy, TokenGenerationParams, StorageAdapter } from '../types';
 
 export interface JwtTokenOptions {
   /** The secret key used to sign and verify JWTs */
@@ -43,25 +43,31 @@ function createTokenPayload(
 
 /**
  * Generates an access token using JWT.
- * Creates a self-contained token that can be validated without database lookups.
+ * Creates a stateless, self-contained token.
  */
 async function generateAccessToken(
   params: TokenGenerationParams,
   context: Context,
   options: JwtTokenOptions,
+  storage: StorageAdapter,
 ): Promise<Token> {
   const accessTokenExpiresAt = new Date(Date.now() + (options.accessTokenExpiresIn || 3600) * 1000);
 
   const payload = createTokenPayload(params, 'access_token', accessTokenExpiresAt, options);
   const accessToken = jwt.sign(payload, options.secret, { algorithm: options.algorithm || 'HS256' });
 
-  return {
+  const token = {
     accessToken,
     accessTokenExpiresAt,
     scope: params.scope,
     clientId: params.client.id,
     userId: params.userId,
   };
+
+  // Store JWT token for revocation tracking
+  await storage.saveToken(token);
+
+  return token;
 }
 
 /**
@@ -72,13 +78,14 @@ async function generateRefreshToken(
   params: TokenGenerationParams,
   context: Context,
   options: JwtTokenOptions,
+  storage: StorageAdapter,
 ): Promise<Token> {
   const refreshTokenExpiresAt = new Date(Date.now() + (options.refreshTokenExpiresIn || 604800) * 1000);
 
   const payload = createTokenPayload(params, 'refresh_token', refreshTokenExpiresAt, options);
   const refreshToken = jwt.sign(payload, options.secret, { algorithm: options.algorithm || 'HS256' });
 
-  return {
+  const token = {
     accessToken: '', // Not applicable for refresh token generation
     accessTokenExpiresAt: new Date(),
     refreshToken,
@@ -87,6 +94,11 @@ async function generateRefreshToken(
     clientId: params.client.id,
     userId: params.userId,
   };
+
+  // Store JWT token for revocation tracking
+  await storage.saveToken(token);
+
+  return token;
 }
 
 /**
@@ -97,6 +109,7 @@ async function generateTokenPair(
   params: TokenGenerationParams,
   context: Context,
   options: JwtTokenOptions,
+  storage: StorageAdapter,
 ): Promise<Token> {
   const accessTokenExpiresAt = new Date(Date.now() + (options.accessTokenExpiresIn || 3600) * 1000);
   const refreshTokenExpiresAt = new Date(Date.now() + (options.refreshTokenExpiresIn || 604800) * 1000);
@@ -131,7 +144,7 @@ async function generateTokenPair(
     { algorithm: options.algorithm || 'HS256' },
   );
 
-  return {
+  const token = {
     accessToken,
     accessTokenExpiresAt,
     refreshToken,
@@ -140,6 +153,11 @@ async function generateTokenPair(
     clientId: params.client.id,
     userId: params.userId,
   };
+
+  // Store JWT token pair for revocation tracking
+  await storage.saveToken(token);
+
+  return token;
 }
 
 /**
@@ -222,10 +240,15 @@ async function validateRefreshToken(
  *
  * JWT tokens are self-contained and can be validated without database lookups,
  * making them perfect for distributed systems and high-performance scenarios.
+ * However, they are still stored for revocation tracking.
+ *
+ * @param storage The storage adapter for token persistence and revocation tracking
+ * @param options JWT token configuration options
  *
  * @example
  * ```typescript
- * const tokenStrategy = createJwtTokenStrategy({
+ * const storage = new YourStorageAdapter();
+ * const tokenStrategy = createJwtTokenStrategy(storage, {
  *   secret: process.env.JWT_SECRET,
  *   accessTokenExpiresIn: 3600, // 1 hour
  *   refreshTokenExpiresIn: 604800, // 7 days
@@ -235,15 +258,12 @@ async function validateRefreshToken(
  * });
  * ```
  */
-export function createJwtTokenStrategy(options: JwtTokenOptions): TokenStrategy {
+export function createJwtTokenStrategy(storage: StorageAdapter, options: JwtTokenOptions): TokenStrategy {
   return {
-    generateAccessToken: (params, context) => generateAccessToken(params, context, options),
-    generateRefreshToken: (params, context) => generateRefreshToken(params, context, options),
-    generateTokenPair: (params, context) => generateTokenPair(params, context, options),
+    generateAccessToken: (params, context) => generateAccessToken(params, context, options, storage),
+    generateRefreshToken: (params, context) => generateRefreshToken(params, context, options, storage),
+    generateTokenPair: (params, context) => generateTokenPair(params, context, options, storage),
     validateAccessToken: (accessToken, context) => validateAccessToken(accessToken, context, options),
     validateRefreshToken: (refreshToken, context) => validateRefreshToken(refreshToken, context, options),
   };
 }
-
-// For backward compatibility
-export const jsonWebTokenStrategy = createJwtTokenStrategy;

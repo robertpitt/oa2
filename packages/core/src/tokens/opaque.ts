@@ -33,14 +33,6 @@ function createToken(
 }
 
 /**
- * Stores a token in the database.
- * Handles both access and refresh tokens.
- */
-async function storeToken(token: Token, storage: StorageAdapter): Promise<void> {
-  await storage.saveToken(token);
-}
-
-/**
  * Validates a token by checking if it exists and is not expired.
  * Returns null if the token is invalid or expired.
  */
@@ -75,12 +67,13 @@ async function generateAccessToken(
   params: TokenGenerationParams,
   context: Context,
   options: OpaqueTokenOptions,
+  storage: StorageAdapter,
 ): Promise<Token> {
   const accessToken = generateRandomString(options.tokenLength || 32);
   const accessTokenExpiresAt = new Date(Date.now() + (options.accessTokenExpiresIn || 3600) * 1000);
 
   const token = createToken(params, accessToken, accessTokenExpiresAt);
-  await storeToken(token, context.storage);
+  await storage.saveToken(token);
 
   return token;
 }
@@ -93,6 +86,7 @@ async function generateRefreshToken(
   params: TokenGenerationParams,
   context: Context,
   options: OpaqueTokenOptions,
+  storage: StorageAdapter,
 ): Promise<Token> {
   const refreshToken = generateRandomString(options.tokenLength || 32);
   const refreshTokenExpiresAt = new Date(Date.now() + (options.refreshTokenExpiresIn || 604800) * 1000);
@@ -105,7 +99,7 @@ async function generateRefreshToken(
     refreshTokenExpiresAt,
   );
 
-  await storeToken(token, context.storage);
+  await storage.saveToken(token);
   return token;
 }
 
@@ -117,6 +111,7 @@ async function generateTokenPair(
   params: TokenGenerationParams,
   context: Context,
   options: OpaqueTokenOptions,
+  storage: StorageAdapter,
 ): Promise<Token> {
   const accessToken = generateRandomString(options.tokenLength || 32);
   const refreshToken = generateRandomString(options.tokenLength || 32);
@@ -124,8 +119,8 @@ async function generateTokenPair(
   const refreshTokenExpiresAt = new Date(Date.now() + (options.refreshTokenExpiresIn || 604800) * 1000);
 
   const token = createToken(params, accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt);
+  await storage.saveToken(token);
 
-  await storeToken(token, context.storage);
   return token;
 }
 
@@ -160,24 +155,25 @@ async function validateRefreshToken(refreshToken: string, context: Context): Pro
  * security as tokens can be easily revoked and contain no embedded information.
  * Validation requires database lookups but provides fine-grained control.
  *
+ * @param storage The storage adapter for token persistence
+ * @param options Opaque token configuration options
+ *
  * @example
  * ```typescript
- * const tokenStrategy = createOpaqueTokenStrategy({
+ * const storage = new YourStorageAdapter();
+ * const tokenStrategy = createOpaqueTokenStrategy(storage, {
  *   accessTokenExpiresIn: 3600, // 1 hour
  *   refreshTokenExpiresIn: 604800, // 7 days
  *   tokenLength: 32
  * });
  * ```
  */
-export function createOpaqueTokenStrategy(options: OpaqueTokenOptions = {}): TokenStrategy {
+export function createOpaqueTokenStrategy(storage: StorageAdapter, options: OpaqueTokenOptions = {}): TokenStrategy {
   return {
-    generateAccessToken: (params, context) => generateAccessToken(params, context, options),
-    generateRefreshToken: (params, context) => generateRefreshToken(params, context, options),
-    generateTokenPair: (params, context) => generateTokenPair(params, context, options),
+    generateAccessToken: (params, context) => generateAccessToken(params, context, options, storage),
+    generateRefreshToken: (params, context) => generateRefreshToken(params, context, options, storage),
+    generateTokenPair: (params, context) => generateTokenPair(params, context, options, storage),
     validateAccessToken: (accessToken, context) => validateAccessToken(accessToken, context),
     validateRefreshToken: (refreshToken, context) => validateRefreshToken(refreshToken, context),
   };
 }
-
-// For backward compatibility
-export const opaqueTokenStrategy = createOpaqueTokenStrategy;

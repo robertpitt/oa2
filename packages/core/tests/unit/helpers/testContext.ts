@@ -1,5 +1,5 @@
 import { Context, OAuth2Request, StorageAdapter, Client, ServerConfig } from '../../../src/types';
-import { opaqueTokenStrategy } from '../../../src/tokens';
+import { createOpaqueTokenStrategy } from '../../../src/tokens';
 
 /**
  * Helper function to create a properly structured Context for unit tests
@@ -12,7 +12,7 @@ export function createTestContext(
 ): Context {
   const defaultConfig: ServerConfig = {
     storage,
-    tokenStrategy: opaqueTokenStrategy({
+    tokenStrategy: createOpaqueTokenStrategy(storage, {
       accessTokenExpiresIn: 3600,
       refreshTokenExpiresIn: 604800,
     }),

@@ -292,11 +292,12 @@ curl -X POST /oauth/token \
 Self-contained tokens that can be validated without database lookups.
 
 ```typescript
-import { jsonWebTokenStrategy } from 'oauth';
+import { createJwtTokenStrategy } from 'oauth';
 
-const tokenStrategy = jsonWebTokenStrategy({
+const storage = new YourStorageAdapter();
+const tokenStrategy = createJwtTokenStrategy(storage, {
   secret: 'your-jwt-secret',
-  expiresIn: 3600,
+  accessTokenExpiresIn: 3600,
   algorithm: 'HS256',
 });
 ```
@@ -306,9 +307,13 @@ const tokenStrategy = jsonWebTokenStrategy({
 Random tokens stored in the database for maximum security.
 
 ```typescript
-import { opaqueTokenStrategy } from 'oauth';
+import { createOpaqueTokenStrategy } from 'oauth';
 
-const tokenStrategy = opaqueTokenStrategy();
+const storage = new YourStorageAdapter();
+const tokenStrategy = createOpaqueTokenStrategy(storage, {
+  accessTokenExpiresIn: 3600,
+  refreshTokenExpiresIn: 604800,
+});
 ```
 
 ## Storage Interface
@@ -522,6 +527,25 @@ app.listen(3000, () => {
 3. Add tests for new functionality
 4. Ensure all tests pass
 5. Submit a pull request
+
+## Releases
+
+This project uses [Changesets](https://github.com/changesets/changesets) for automated versioning and publishing. All packages use **synchronized versioning** - they all get the same version number.
+
+To create a release:
+
+```bash
+# 1. Create a changeset describing your changes
+yarn changeset
+
+# 2. Commit and push to main
+git add . && git commit -m "feat: your feature" && git push
+
+# 3. GitHub Actions will create a Release PR
+# 4. Merge the Release PR to publish to npm
+```
+
+For more details, see [RELEASING.md](./RELEASING.md).
 
 ## License
 

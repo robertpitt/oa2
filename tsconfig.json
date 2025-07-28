@@ -1,14 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
-    "rootDir": "./",
-    "declaration": true
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["./src", "./tests"]
+  "references": [
+    {
+      "path": "./packages/core"
+    }
+  ],
+  "files": []
 }
